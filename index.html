@@ -6,11 +6,164 @@
   <title>BI Command Center — Journey to Top 0.1% Director of BI</title>
   <meta name="description" content="Track progress toward becoming a top 0.1% Director of Business Intelligence – Expense Technology using Power BI, star schema data models, and GitHub-based engineering practices." />
   <link rel="stylesheet" href="theme.css" />
+  <style>
+    /* ── Login Screen ──────────────────────────────────────── */
+    #login-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background:
+        radial-gradient(ellipse 80% 60% at 20% 10%, rgba(44,142,214,0.18) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 80% 80%, rgba(0,61,115,0.14) 0%, transparent 55%),
+        var(--color-off-white);
+    }
+
+    .login-card {
+      background: var(--glass-bg);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+      border: 1px solid var(--glass-border);
+      box-shadow: var(--glass-shadow-lg);
+      border-radius: var(--glass-radius-lg);
+      padding: 48px 44px;
+      text-align: center;
+      max-width: 400px;
+      width: 90%;
+    }
+
+    .login-card__logo {
+      width: 56px;
+      height: 56px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--color-blue-mid), var(--color-blue-light));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      box-shadow: 0 4px 16px rgba(12, 103, 177, 0.40);
+    }
+
+    .login-card__logo svg {
+      width: 30px;
+      height: 30px;
+      color: white;
+    }
+
+    .login-card__title {
+      font-size: var(--font-size-xl);
+      font-weight: 600;
+      color: var(--color-blue-deep);
+      margin-bottom: 6px;
+    }
+
+    .login-card__subtitle {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-sub);
+      margin-bottom: 36px;
+      line-height: 1.5;
+    }
+
+    .btn-google {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 13px 28px;
+      font-size: var(--font-size-base);
+      font-weight: 500;
+      font-family: var(--font-family);
+      color: var(--color-text);
+      background: white;
+      border: 1px solid var(--color-grey-200);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: var(--transition);
+      box-shadow: 0 2px 8px rgba(0, 61, 115, 0.08);
+      width: 100%;
+    }
+
+    .btn-google:hover {
+      background: var(--color-off-white);
+      box-shadow: 0 4px 16px rgba(0, 61, 115, 0.14);
+      border-color: var(--color-grey-400);
+    }
+
+    .btn-google:active {
+      transform: scale(0.98);
+    }
+
+    .btn-google svg {
+      flex-shrink: 0;
+    }
+
+    /* ── Auth user display in nav ──────────────────────────── */
+    .topnav__user {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .topnav__user-name {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-sub);
+    }
+
+    .btn-signout {
+      padding: 6px 14px;
+      font-size: 12px;
+      font-weight: 500;
+      font-family: var(--font-family);
+      color: var(--color-blue-mid);
+      background: transparent;
+      border: 1px solid var(--color-blue-tint);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .btn-signout:hover {
+      background: var(--color-blue-tint);
+      color: var(--color-blue-deep);
+    }
+  </style>
 </head>
 <body>
 
+  <!-- ── Login Screen ──────────────────────────────────────── -->
+  <div id="login-screen" aria-label="Sign in">
+    <div class="login-card" role="main">
+      <div class="login-card__logo" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+             stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="3" width="20" height="14" rx="2"/>
+          <line x1="8" y1="21" x2="16" y2="21"/>
+          <line x1="12" y1="17" x2="12" y2="21"/>
+          <line x1="7"  y1="8"  x2="7"  y2="13"/>
+          <line x1="12" y1="6"  x2="12" y2="13"/>
+          <line x1="17" y1="10" x2="17" y2="13"/>
+        </svg>
+      </div>
+      <div class="login-card__title">BI Command Center</div>
+      <div class="login-card__subtitle">Journey to Top 0.1% Director of BI<br>Sign in to access your dashboard</div>
+      <button class="btn-google" id="login-btn" onclick="App.login()">
+        <!-- Google "G" logo -->
+        <svg width="20" height="20" viewBox="0 0 48 48" aria-hidden="true">
+          <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+          <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+          <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+          <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.36-8.16 2.36-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+          <path fill="none" d="M0 0h48v48H0z"/>
+        </svg>
+        Sign in with Google
+      </button>
+    </div>
+  </div>
+
   <!-- ── Top Navigation Bar ────────────────────────────────── -->
-  <header class="topnav" role="banner">
+  <header class="topnav" role="banner" style="display:none">
     <div class="topnav__logo" aria-hidden="true">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
            stroke-linecap="round" stroke-linejoin="round">
@@ -28,22 +181,27 @@
     </div>
     <div class="topnav__actions">
       <span class="topnav__badge">Power BI · GitHub · Star Schema</span>
+      <div class="topnav__user" id="topnav-user" style="display:none">
+        <span class="topnav__user-name" id="topnav-user-name"></span>
+        <button class="btn-signout" onclick="App.logout()">Sign Out</button>
+      </div>
     </div>
   </header>
 
   <!-- ── Side Navigation Rail ──────────────────────────────── -->
-  <nav class="sidenav" id="sidenav" role="navigation" aria-label="Main navigation">
+  <nav class="sidenav" id="sidenav" role="navigation" aria-label="Main navigation" style="display:none">
     <!-- Populated by app.js -->
   </nav>
 
   <!-- ── Main Content ──────────────────────────────────────── -->
-  <main class="main-content" role="main">
+  <main class="main-content" role="main" style="display:none">
     <div id="sectionContent">
       <!-- Section content rendered by app.js -->
     </div>
   </main>
 
   <!-- ── Scripts ───────────────────────────────────────────── -->
+  <script src="https://cdn.auth0.com/js/auth0-spa-js/2.0/auth0-spa-js.production.js"></script>
   <script src="data.js"></script>
   <script src="app.js"></script>
 
