@@ -34,7 +34,7 @@ The site requires Google login via Auth0 before the dashboard is accessible.
 1. Create a free account at [auth0.com](https://auth0.com)
 2. Go to **Applications → Create Application** and choose **Single Page Application**
 3. In the Auth0 dashboard, go to **Authentication → Social** and enable the **Google / Gmail** connection
-4. In your application's settings, set the following URLs to your GitHub Pages URL (e.g. `https://grizzly27.github.io/Command-center/`):
+4. In your application's settings, set the following URLs to your GitHub Pages URL — **include the trailing slash** (e.g. `https://grizzly27.github.io/Command-center/`):
    - **Allowed Callback URLs**
    - **Allowed Logout URLs**
    - **Allowed Web Origins**

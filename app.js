@@ -12,6 +12,10 @@ const AUTH0_CLIENT_ID = 'YOUR_AUTH0_CLIENT_ID';
   // ── Auth0 State ───────────────────────────────────────────
   let auth0Client = null;
 
+  // Derive the base app URL (origin + path, no query string or hash)
+  // This must match the Allowed Callback URLs and Allowed Logout URLs in Auth0.
+  const APP_BASE_URL = window.location.origin + window.location.pathname;
+
   async function initAuth0() {
     // Warn if Auth0 credentials have not been configured
     if (AUTH0_DOMAIN === 'YOUR_AUTH0_DOMAIN' || AUTH0_CLIENT_ID === 'YOUR_AUTH0_CLIENT_ID') {
@@ -24,7 +28,7 @@ const AUTH0_CLIENT_ID = 'YOUR_AUTH0_CLIENT_ID';
         domain:   AUTH0_DOMAIN,
         clientId: AUTH0_CLIENT_ID,
         authorizationParams: {
-          redirect_uri: window.location.origin + window.location.pathname,
+          redirect_uri: APP_BASE_URL,
         },
       });
     } catch (err) {
@@ -754,7 +758,7 @@ const AUTH0_CLIENT_ID = 'YOUR_AUTH0_CLIENT_ID';
       try {
         await auth0Client.logout({
           logoutParams: {
-            returnTo: window.location.origin + window.location.pathname,
+            returnTo: APP_BASE_URL,
           },
         });
       } catch (err) {
