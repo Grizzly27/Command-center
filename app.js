@@ -2,8 +2,83 @@
 // BI Command Center — App Logic
 // ============================================================
 
+// ── Auth0 Configuration ───────────────────────────────────
+const AUTH0_DOMAIN    = 'YOUR_AUTH0_DOMAIN';    // e.g. dev-xxxx.us.auth0.com
+const AUTH0_CLIENT_ID = 'YOUR_AUTH0_CLIENT_ID';
+
 (function () {
   'use strict';
+
+  // ── Auth0 State ───────────────────────────────────────────
+  let auth0Client = null;
+
+  // Derive the base app URL (origin + path, no query string or hash)
+  // This must match the Allowed Callback URLs and Allowed Logout URLs in Auth0.
+  const APP_BASE_URL = window.location.origin + window.location.pathname;
+
+  async function initAuth0() {
+    // Warn if Auth0 credentials have not been configured
+    if (AUTH0_DOMAIN === 'YOUR_AUTH0_DOMAIN' || AUTH0_CLIENT_ID === 'YOUR_AUTH0_CLIENT_ID') {
+      console.error('Auth0 is not configured. Please replace AUTH0_DOMAIN and AUTH0_CLIENT_ID in app.js with your Auth0 credentials.');
+      return;
+    }
+
+    try {
+      auth0Client = await auth0.createAuth0Client({
+        domain:   AUTH0_DOMAIN,
+        clientId: AUTH0_CLIENT_ID,
+        authorizationParams: {
+          redirect_uri: APP_BASE_URL,
+        },
+      });
+    } catch (err) {
+      console.error('Failed to initialize Auth0 client:', err);
+      return;
+    }
+
+    // Handle redirect callback after login
+    if (window.location.search.includes('code=') && window.location.search.includes('state=')) {
+      try {
+        await auth0Client.handleRedirectCallback();
+        // Clean up URL query params after callback
+        window.history.replaceState({}, document.title, window.location.pathname);
+      } catch (err) {
+        console.error('Auth0 redirect callback failed:', err);
+        // Remove the broken query string so the user can try again
+        window.history.replaceState({}, document.title, window.location.pathname);
+        return;
+      }
+    }
+
+    const isAuthenticated = await auth0Client.isAuthenticated();
+    if (isAuthenticated) {
+      await showDashboard();
+    }
+    // Login screen remains visible if not authenticated
+  }
+
+  async function showDashboard() {
+    // Hide login screen
+    const loginScreen = document.getElementById('login-screen');
+    if (loginScreen) loginScreen.style.display = 'none';
+
+    // Show dashboard elements
+    document.querySelector('header.topnav').style.display = '';
+    document.getElementById('sidenav').style.display = '';
+    document.querySelector('main.main-content').style.display = '';
+
+    // Display logged-in user info
+    const user = await auth0Client.getUser();
+    if (user) {
+      const nameEl = document.getElementById('topnav-user-name');
+      const userEl = document.getElementById('topnav-user');
+      if (nameEl) nameEl.textContent = user.name || user.email || '';
+      if (userEl) userEl.style.display = '';
+    }
+
+    buildSidenav();
+    navigate(currentSection);
+  }
 
   // ── SVG Icon Library ──────────────────────────────────────
   const ICONS = {
@@ -668,12 +743,33 @@
       domainView = view;
       navigate('domains');
     },
+    async login() {
+      if (!auth0Client) return;
+      try {
+        await auth0Client.loginWithRedirect({
+          authorizationParams: { connection: 'google-oauth2' },
+        });
+      } catch (err) {
+        console.error('Login failed:', err);
+      }
+    },
+    async logout() {
+      if (!auth0Client) return;
+      try {
+        await auth0Client.logout({
+          logoutParams: {
+            returnTo: APP_BASE_URL,
+          },
+        });
+      } catch (err) {
+        console.error('Logout failed:', err);
+      }
+    },
   };
 
   // ── Init ──────────────────────────────────────────────────
   document.addEventListener('DOMContentLoaded', () => {
-    buildSidenav();
-    navigate(currentSection);
+    initAuth0();
   });
 
 })();
